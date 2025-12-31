@@ -16,13 +16,6 @@ export class AuthenticationError extends AppError {
   }
 }
 
-export class ValidationError extends AppError {
-  constructor(message: string, userMessage?: string) {
-    super(message, 400, userMessage || message);
-    this.name = "ValidationError";
-  }
-}
-
 export class NotFoundError extends AppError {
   constructor(resource = "Resource") {
     super(`${resource} not found`, 404, `${resource} not found`);

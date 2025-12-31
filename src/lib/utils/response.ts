@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { AppError } from "@/lib/errors";
+import { AppError } from "@/lib/utils/errors";
 
 export function handleError(error: unknown): NextResponse {
   console.error("API error:", error);

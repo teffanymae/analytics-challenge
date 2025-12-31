@@ -1,6 +1,13 @@
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 
-export const formatDate = (dateString: string): string => {
+dayjs.extend(utc);
+
+export function formatDate(date: Date): string {
+  return dayjs(date).utc().format('YYYY-MM-DD');
+}
+
+export const formatLongDate = (dateString: string): string => {
   return dayjs(dateString).format("dddd, MMMM D, YYYY");
 };
 

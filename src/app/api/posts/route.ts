@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { authenticateUser } from "@/lib/auth";
+import { authenticateUser } from "@/lib/auth/auth";
 import { fetchPosts } from "@/lib/services/posts.service";
-import { handleError, successResponse } from "@/lib/response";
+import { handleError, successResponse } from "@/lib/utils/response";
 
 interface PostsRequestBody {
   platform?: string;

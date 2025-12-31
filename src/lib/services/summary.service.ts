@@ -1,32 +1,29 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { ValidationError } from "@/lib/errors";
-import { validateDaysParam } from "@/lib/validation";
-import { calculateEngagement, calculateChange } from "@/lib/engagement";
-import dayjs from "dayjs";
-import dayjsDayOfYear from "dayjs/plugin/dayOfYear";
-import isLeapYear from "dayjs/plugin/isLeapYear";
-
-dayjs.extend(dayjsDayOfYear);
-dayjs.extend(isLeapYear);
+import { calculateEngagement, calculateChange } from "@/lib/utils/engagement";
+import { calculateComparisonPeriods } from "@/lib/utils/date-range";
+import { formatDate } from "@/lib/utils/date";
+import type { Tables } from "@/lib/database/database.types";
 
 export interface AnalyticsQueryParams {
   days?: number;
   userId: string;
 }
 
-export interface TopPerformingPost {
-  id: string;
-  caption: string;
-  platform: string;
-  likes: number | null;
-  comments: number | null;
-  shares: number | null;
-  saves: number | null;
-  engagement_rate: number | null;
-  posted_at: string;
-  thumbnail_url: string | null;
+export type TopPerformingPost = Pick<
+  Tables<"posts">,
+  | "id"
+  | "caption"
+  | "platform"
+  | "likes"
+  | "comments"
+  | "shares"
+  | "saves"
+  | "engagement_rate"
+  | "posted_at"
+  | "thumbnail_url"
+> & {
   engagement: number;
-}
+};
 
 export interface AnalyticsSummary {
   totalEngagement: number;
@@ -45,20 +42,10 @@ export async function fetchAnalyticsSummary(
   params: AnalyticsQueryParams
 ): Promise<AnalyticsSummary> {
   const { days = 30, userId } = params;
-  const maxDays = dayjs().isLeapYear() ? 366 : 365;
 
-  const daysValidation = validateDaysParam(days, maxDays);
-  if (!daysValidation.valid) {
-    throw new ValidationError("Invalid days parameter", daysValidation.error);
-  }
-
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() - 1);
-  const startDate = new Date(endDate);
-  startDate.setDate(startDate.getDate() - days);
-
-  const previousStartDate = new Date(startDate);
-  previousStartDate.setDate(previousStartDate.getDate() - days);
+  const { current, previous } = calculateComparisonPeriods(days);
+  const { startDate: currentStartDate, endDate: currentEndDate } = current;
+  const { startDate: previousStartDate, endDate: previousEndDate } = previous;
 
   const [currentResult, previousResult] = await Promise.all([
     supabase
@@ -67,14 +54,16 @@ export async function fetchAnalyticsSummary(
         "id, caption, platform, likes, comments, shares, saves, engagement_rate, posted_at, thumbnail_url"
       )
       .eq("user_id", userId)
-      .gte("posted_at", startDate.toISOString())
-      .lte("posted_at", endDate.toISOString()),
+      .gte("posted_at", formatDate(currentStartDate))
+      .lte("posted_at", formatDate(currentEndDate)),
     supabase
       .from("posts")
-      .select("likes, comments, shares, saves, engagement_rate")
+      .select(
+        "id, caption, platform, likes, comments, shares, saves, engagement_rate, posted_at, thumbnail_url"
+      )
       .eq("user_id", userId)
-      .gte("posted_at", previousStartDate.toISOString())
-      .lt("posted_at", startDate.toISOString()),
+      .gte("posted_at", formatDate(previousStartDate))
+      .lt("posted_at", formatDate(previousEndDate)),
   ]);
 
   if (currentResult.error || previousResult.error) {
@@ -124,10 +113,7 @@ export async function fetchAnalyticsSummary(
     };
   }
 
-  const trendChange = calculateChange(
-    totalEngagement,
-    previousTotalEngagement
-  );
+  const trendChange = calculateChange(totalEngagement, previousTotalEngagement);
   const engagementRateChange = calculateChange(
     averageEngagementRate,
     previousAverageEngagementRate

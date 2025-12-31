@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
-import { authenticateUser } from "@/lib/auth";
+import { authenticateUser } from "@/lib/auth/auth";
 import { fetchEngagementData } from "@/lib/services/engagement.service";
-import { handleError, successResponse } from "@/lib/response";
+import { handleError, successResponse } from "@/lib/utils/response";
 
-interface EngagementRequestBody {
+interface TrendsRequestBody {
   days?: number;
   platform?: string;
 }
@@ -11,7 +11,7 @@ interface EngagementRequestBody {
 export async function POST(request: NextRequest) {
   try {
     const { user, supabase } = await authenticateUser();
-    const body: EngagementRequestBody = await request.json();
+    const body: TrendsRequestBody = await request.json();
 
     const result = await fetchEngagementData(supabase, {
       ...body,

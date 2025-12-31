@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { authenticateUser } from "@/lib/auth";
-import { fetchAnalyticsSummary } from "@/lib/services/analytics.service";
-import { handleError, successResponse } from "@/lib/response";
+import { authenticateUser } from "@/lib/auth/auth";
+import { fetchAnalyticsSummary } from "@/lib/services/summary.service";
+import { handleError, successResponse } from "@/lib/utils/response";
 
 export async function GET(request: NextRequest) {
   try {

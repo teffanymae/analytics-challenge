@@ -9,6 +9,8 @@ interface UIState {
   days: number;
   dailyMetricsChartType: "line" | "area";
   engagementChartType: "line" | "area";
+  _hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
   setPlatformFilter: (platform: string | undefined) => void;
   openPostModal: (postId: string) => void;
   closePostModal: () => void;
@@ -28,6 +30,8 @@ export const useUIStore = create<UIState>()(
       days: 30,
       dailyMetricsChartType: "area",
       engagementChartType: "line",
+      _hasHydrated: false,
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
       setPlatformFilter: (platform) => set({ platformFilter: platform }),
       openPostModal: (postId) =>
         set({ selectedPostId: postId, isPostModalOpen: true }),
@@ -46,6 +50,9 @@ export const useUIStore = create<UIState>()(
         dailyMetricsChartType: state.dailyMetricsChartType,
         engagementChartType: state.engagementChartType,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

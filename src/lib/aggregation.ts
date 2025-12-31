@@ -1,3 +1,6 @@
+import type { Tables } from "@/lib/database/database.types";
+import { formatDate } from "./utils/date";
+
 export interface DailyEngagement {
   date: string;
   likes: number;
@@ -7,27 +10,19 @@ export interface DailyEngagement {
   total: number;
 }
 
-export interface PostMetrics {
-  posted_at: string;
-  likes: number | null;
-  comments: number | null;
-  shares: number | null;
-  saves: number | null;
-}
+export type PostMetrics = Pick<
+  Tables<"posts">,
+  "posted_at" | "likes" | "comments" | "shares" | "saves"
+>;
 
-export function aggregateByDate(posts: PostMetrics[]): Map<string, DailyEngagement> {
+export function aggregateByDate(
+  posts: PostMetrics[]
+): Map<string, DailyEngagement> {
   const map = new Map<string, DailyEngagement>();
 
   posts.forEach((post) => {
-    const date = new Date(post.posted_at).toISOString().split("T")[0];
-    const existing = map.get(date) || {
-      date,
-      likes: 0,
-      comments: 0,
-      shares: 0,
-      saves: 0,
-      total: 0,
-    };
+    const date = formatDate(new Date(post.posted_at));
+    const existing = map.get(date) || createEmptyDailyEngagement(date);
 
     const likes = post.likes || 0;
     const comments = post.comments || 0;
@@ -47,6 +42,17 @@ export function aggregateByDate(posts: PostMetrics[]): Map<string, DailyEngageme
   return map;
 }
 
+function createEmptyDailyEngagement(date: string): DailyEngagement {
+  return {
+    date,
+    likes: 0,
+    comments: 0,
+    shares: 0,
+    saves: 0,
+    total: 0,
+  };
+}
+
 export function fillMissingDates(
   startDate: Date,
   endDate: Date,
@@ -56,17 +62,8 @@ export function fillMissingDates(
   const current = new Date(startDate);
 
   while (current <= endDate) {
-    const dateStr = current.toISOString().split("T")[0];
-    result.push(
-      dataMap.get(dateStr) || {
-        date: dateStr,
-        likes: 0,
-        comments: 0,
-        shares: 0,
-        saves: 0,
-        total: 0,
-      }
-    );
+    const dateStr = formatDate(current);
+    result.push(dataMap.get(dateStr) || createEmptyDailyEngagement(dateStr));
     current.setDate(current.getDate() + 1);
   }
 

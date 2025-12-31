@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { AuthenticationError } from "@/lib/errors";
+import { AuthenticationError } from "@/lib/utils/errors";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 export interface AuthResult {

@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { ValidationError } from "@/lib/errors";
-import { isValidPlatform, sanitizePageParams } from "@/lib/validation";
+import { NotFoundError } from "@/lib/utils/errors";
+import { sanitizePageParams } from "@/lib/utils/validation";
+import type { Tables } from "@/lib/database/database.types";
 
 export interface PostsQueryParams {
   platform?: string;
@@ -30,13 +31,6 @@ export async function fetchPosts(
     pageSize = DEFAULT_PAGE_SIZE,
     userId,
   } = params;
-
-  if (platform && !isValidPlatform(platform)) {
-    throw new ValidationError(
-      "Invalid platform",
-      "Invalid platform. Must be 'instagram' or 'tiktok'."
-    );
-  }
 
   const { page: validatedPage, pageSize: validatedPageSize } =
     sanitizePageParams(page, pageSize, MAX_PAGE_SIZE);
@@ -70,7 +64,26 @@ export async function fetchPosts(
   };
 
   return {
-    data: data || [],
+    data: (data || []) as Tables<"posts">[],
     pagination,
   };
+}
+
+export async function fetchPostById(
+  supabase: SupabaseClient,
+  postId: string,
+  userId: string
+) {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", postId)
+    .eq("user_id", userId)
+    .single();
+
+  if (error) {
+    throw new NotFoundError("Post not found or you don't have access to it");
+  }
+
+  return data as Tables<"posts">;
 }

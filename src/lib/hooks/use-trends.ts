@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUserFriendlyError } from "@/lib/errors";
+import { getUserFriendlyError } from "@/lib/utils/errors";
 
-interface DailyEngagement {
+interface Engagement {
   date: string;
   likes: number;
   comments: number;
@@ -16,9 +16,9 @@ interface MetricSummary {
   change: number;
 }
 
-interface EngagementResponse {
-  current: DailyEngagement[];
-  previous: DailyEngagement[];
+interface TrendsResponse {
+  current: Engagement[];
+  previous: Engagement[];
   summary: {
     likes: MetricSummary;
     comments: MetricSummary;
@@ -28,9 +28,9 @@ interface EngagementResponse {
   };
 }
 
-export function useEngagement(days = 30, platform?: string) {
-  return useQuery<EngagementResponse>({
-    queryKey: ["engagement", days, platform],
+export function useTrends(days = 30, platform?: string) {
+  return useQuery<TrendsResponse>({
+    queryKey: ["trends", days, platform],
     queryFn: async () => {
       const response = await fetch("/api/engagement", {
         method: "POST",

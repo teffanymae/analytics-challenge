@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Tables } from "@/lib/database.types";
-import { getUserFriendlyError } from "@/lib/errors";
+import { Tables } from "@/lib/database/database.types";
+import { getUserFriendlyError } from "@/lib/utils/errors";
 
 type Post = Tables<"posts">;
 

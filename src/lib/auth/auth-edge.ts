@@ -1,5 +1,5 @@
 import { createClient, SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabase/edge";
-import { AuthenticationError, AppError } from "@/lib/errors";
+import { AuthenticationError, AppError } from "@/lib/utils/errors";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
 export interface AuthResult {

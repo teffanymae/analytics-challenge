@@ -5,10 +5,10 @@ import { createClient } from "@/lib/supabase/client";
 import { useUIStore } from "@/lib/stores/ui-store";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PostsTable } from "@/components/posts/posts-table";
-import { EngagementChart } from "@/components/charts/engagement-chart";
-import { DailyMetricsChart } from "@/components/charts/daily-metrics-chart";
-import { SummaryCards } from "@/components/summary/summary-cards";
+import { DailyMetricsChart } from "@/components/charts/daily-metrics";
+import { SummaryCards } from "@/components/summary";
+import { EngagementChart } from "@/components/charts/engagement";
+import { PostsTable } from "@/components/posts/table";
 import {
   Select,
   SelectContent,
@@ -22,8 +22,13 @@ export default function DashboardPage() {
   const router = useRouter();
   const days = useUIStore((state) => state.days);
   const setDays = useUIStore((state) => state.setDays);
+  const hasHydrated = useUIStore((state) => state._hasHydrated);
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  if (!hasHydrated) {
+    return null;
+  }
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -36,7 +41,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold py-2">Analytics Dashboard</h1>
           <Button
             onClick={handleLogout}
@@ -49,7 +54,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           <div className="flex justify-end mb-6">
             <Select

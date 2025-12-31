@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { Tables } from "@/lib/database.types";
-import { getUserFriendlyError } from "@/lib/errors";
+import { getUserFriendlyError } from "@/lib/utils/errors";
+import type { TopPerformingPost } from "@/lib/services/summary.service";
 
 interface ApiResponse {
   totalEngagement: number;
   averageEngagementRate: number;
-  topPerformingPost: Tables<"posts"> | null;
+  topPerformingPost: TopPerformingPost | null;
   trendIndicator: {
     value: number;
     isPositive: boolean;
@@ -16,7 +16,7 @@ interface ApiResponse {
 export interface SummaryData {
   totalEngagement: number;
   avgEngagementRate: number;
-  topPost: Tables<"posts"> | null;
+  topPost: TopPerformingPost | null;
   trends: {
     engagementChange: number;
     engagementRateChange: number;
