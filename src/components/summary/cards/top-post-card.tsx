@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { TrendingUpIcon } from "lucide-react";
-import { Tables } from "@/lib/database/database.types";
 import Image from "next/image";
 import { formatShortDate } from "@/lib/utils/date";
 import { PostDetailModal } from "@/components/posts/modal";
-import { calculateEngagement } from "@/lib/utils/engagement";
+import type { TopPerformingPost } from "@/lib/services/summary.service";
 
 interface TopPostCardProps {
-  post: Tables<"posts"> | null;
+  post: TopPerformingPost | null;
 }
 
 export function TopPostCard({ post }: TopPostCardProps) {
@@ -74,7 +73,7 @@ export function TopPostCard({ post }: TopPostCardProps) {
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-600">Total Engagement</span>
             <span className="text-lg font-bold text-gray-900">
-              {calculateEngagement(post).toLocaleString()}
+              {post.engagement.toLocaleString()}
             </span>
           </div>
           <div className="flex items-center justify-between mt-1">
