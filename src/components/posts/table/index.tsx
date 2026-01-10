@@ -180,11 +180,13 @@ export function PostsTable() {
           )}
         </div>
 
-        <PostDetailModal
-          postId={selectedPostId}
-          open={isPostModalOpen}
-          onOpenChange={(open) => !open && closePostModal()}
-        />
+        {selectedPostId && (
+          <PostDetailModal
+            postId={selectedPostId}
+            open={isPostModalOpen}
+            onOpenChange={(open) => !open && closePostModal()}
+          />
+        )}
 
         {!isLoading && posts.length > 0 && (
           <TablePagination

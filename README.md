@@ -303,14 +303,13 @@ If this was a public analytics page or a team dashboard, then yeah, URL state wo
 
 **Charts:**
 - Loading skeleton while fetching
-- "No data available" message if empty
+- Shows flat line when no data
 - Doesn't crash or show a blank screen
 - Handles missing previous period data gracefully
 
 **Posts Table:**
+- Hide table when no data
 - Empty state with a message
-- Table headers still show (so it doesn't look broken)
-- Could add a "Create your first post" button here but didn't have time
 
 **API responses:**
 - Always return `[]` for empty arrays
