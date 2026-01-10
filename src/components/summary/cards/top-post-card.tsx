@@ -85,11 +85,13 @@ export function TopPostCard({ post }: TopPostCardProps) {
         </div>
       </div>
 
-      <PostDetailModal
-        postId={post.id}
-        open={isModalOpen}
-        onOpenChange={setIsModalOpen}
-      />
+      {isModalOpen && (
+        <PostDetailModal
+          postId={post.id}
+          open={isModalOpen}
+          onOpenChange={setIsModalOpen}
+        />
+      )}
     </>
   );
 }
